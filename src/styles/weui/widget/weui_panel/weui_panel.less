@@ -1,0 +1,35 @@
+@import "../../base/fn";
+
+
+.weui-panel {
+    background-color: #FFFFFF;
+    margin-top: 20px;
+    &:first-child {
+        margin-top: 0;
+    }
+
+    position: relative;
+    overflow: hidden;
+    &:before {
+        .setTopLine(@weuiLineColorLight);
+    }
+    &:after {
+        .setBottomLine(@weuiLineColorLight);
+    }
+}
+
+.weui-panel__hd {
+    padding: 28px 30px 20px;
+    color: @weuiTextColorGray;
+    // font-size: 13px;
+    .px2px(font-size, 26PX);
+    position: relative;
+    &:after {
+        .setBottomLine(@weuiLineColorLight);
+        left: 30px;
+    }
+}
+
+
+
+
