@@ -2,7 +2,7 @@
   <div class="vux-rater">
     <input v-model="currentValue" style="display:none">
     <a class="vux-rater-box" v-for="i in max" @click="handleClick(i-1)" :class="{'is-active':currentValue > i-1}" :style="{color: colors && colors[i-1] ? colors[i-1] : '#ccc',marginRight:margin+'px',fontSize: fontSize + 'px', width: fontSize + 'px', height: fontSize + 'px', lineHeight: fontSize + 'px'}">
-      <span class="vux-rater-inner">{{star}}<span class="vux-rater-outer" :style="{color: activeColor, width: cutPercent + '%'}" v-if="cutPercent > 0 && cutIndex === i-1">{{star}}</span></span>
+      <span class="vux-rater-inner"><span v-html="star"></span><span class="vux-rater-outer" :style="{color: activeColor, width: cutPercent + '%'}" v-if="cutPercent > 0 && cutIndex === i-1" v-html="star"></span></span>
     </a>
   </div>
 </template>
@@ -11,18 +11,22 @@
 export default {
   name: 'rater',
   created () {
-    this.currentValue = this.value
+    this.currentValue = parseInt(this.value)
   },
   mounted () {
     this.updateStyle()
   },
   props: {
+    min: {
+      type: Number,
+      default: 0
+    },
     max: {
       type: Number,
       default: 5
     },
     value: {
-      type: Number,
+      type: [Number, String],
       default: 0
     },
     disabled: Boolean,
@@ -59,10 +63,10 @@ export default {
     handleClick (i, force) {
       if (!this.disabled || force) {
         if (this.currentValue === i + 1) {
-          this.currentValue = i
+          this.currentValue = i < this.min ? this.min : i
           this.updateStyle()
         } else {
-          this.currentValue = i + 1
+          this.currentValue = (i + 1) < this.min ? this.min : (i + 1)
         }
       }
     },

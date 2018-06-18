@@ -1,6 +1,6 @@
 <template>
   <div class="vux-cell-box">
-    <div class="weui-cell vux-tap-active weui-cell_access" @click="onClick" v-show="showCell">
+    <div class="weui-cell vux-tap-active" :class="{'weui-cell_access': !disabled}" @click="onClick" v-show="showCell">
       <div class="weui-cell__hd">
         <slot name="title" label-class="weui-label" :label-style="labelStyles" :label-title="title">
           <label class="weui-label" :class="labelClass" :style="labelStyles" v-if="title" v-html="title"></label>
@@ -141,7 +141,8 @@ export default {
     },
     columnWidth: Array,
     popupStyle: Object,
-    popupTitle: String
+    popupTitle: String,
+    disabled: Boolean
   },
   computed: {
     labelStyles () {
@@ -164,7 +165,9 @@ export default {
       return value2name(this.currentValue, this.data)
     },
     onClick () {
-      this.showValue = true
+      if (!this.disabled) {
+        this.showValue = true
+      }
     },
     onHide (type) {
       this.showValue = false
@@ -248,10 +251,9 @@ export default {
 .vux-cell-box {
   position: relative;
 }
-.vux-cell-box:before {
+.vux-cell-box:not(:first-child):before {
   content: " ";
   position: absolute;
-  left: 0;
   top: 0;
   width: 100%;
   height: 1PX;

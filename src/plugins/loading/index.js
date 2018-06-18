@@ -4,6 +4,7 @@ import { mergeOptions } from '../../libs/plugin_helper'
 let $vm
 let watcher
 let delayTime = null
+
 const plugin = {
   install (vue, options) {
     const Loading = vue.extend(LoadingComponent)
@@ -30,6 +31,7 @@ const plugin = {
             val === false && options.onHide && options.onHide($vm)
           })
         }
+        delayTime && clearTimeout(delayTime)
         delayTime = setTimeout(() => {
           $vm.show = true
         }, options.delay || 0)
@@ -40,6 +42,9 @@ const plugin = {
           delayTime = null
         }
         $vm.show = false
+      },
+      isVisible () {
+        return $vm.show
       }
     }
 

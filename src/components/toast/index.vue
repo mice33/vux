@@ -171,7 +171,6 @@ export default {
 .weui-toast_cancel .weui-icon_toast:before {
   content: "\EA0D";
 }
-// .weui-toast_forbidden .weui-icon-success-no-circle.weui-icon_toast:before { 
 .weui-toast_forbidden .weui-icon_toast.weui-icon-success-no-circle:before {
   content: "\EA0B";
   color: #F76260;

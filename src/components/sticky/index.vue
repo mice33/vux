@@ -9,8 +9,19 @@ import sticky from './sticky'
 
 export default {
   name: 'sticky',
+  data () {
+    return {
+      initTimes: 0
+    }
+  },
   created () {
     this.$vux && this.$vux.bus && this.$vux.bus.$on('vux:after-view-enter', this.bindSticky)
+  },
+  activated () {
+    if (this.initTimes > 0) {
+      this.bindSticky()
+    }
+    this.initTimes++
   },
   mounted () {
     this.$nextTick(() => {
@@ -22,6 +33,9 @@ export default {
   },
   methods: {
     bindSticky () {
+      if (this.disabled) {
+        return
+      }
       this.$nextTick(() => {
         sticky(this.$el, {
           scrollBox: this.scrollBox,
@@ -31,7 +45,7 @@ export default {
       })
     }
   },
-  props: ['scrollBox', 'offset', 'checkStickySupport']
+  props: ['scrollBox', 'offset', 'checkStickySupport', 'disabled']
 }
 </script>
 
@@ -51,5 +65,11 @@ export default {
   position: fixed;
   top: 0;
   transform: translate3d(0, 0, 0);
+}
+.vux-sticky-fill {
+  display: none;
+}
+.vux-fixed + .vux-sticky-fill {
+  display: block;
 }
 </style>

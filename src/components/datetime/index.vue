@@ -1,28 +1,36 @@
 <template>
   <a
-  class="vux-datetime weui-cell"
-  :class="{'weui-cell_access': !readonly}"
-  :data-cancel-text="$t('cancel_text')"
-  :data-confirm-text="$t('confirm_text')"
-  href="javascript:">
+    class="vux-datetime weui-cell"
+    :class="{'weui-cell_access': !readonly}"
+    :data-cancel-text="$t('cancel_text')"
+    :data-confirm-text="$t('confirm_text')"
+    href="javascript:">
     <slot>
       <div>
         <slot name="title">
           <p
-          :style="{
-            width: $parent.labelWidth,
-            textAlign: $parent.labelAlign,
-            marginRight: $parent.labelMarginRight
-          }"
-          :class="labelClass"
-          v-html="title"></p>
+            :style="styles"
+            :class="labelClass"
+            v-html="title"></p>
         </slot>
         <inline-desc v-if="inlineDesc">{{ inlineDesc }}</inline-desc>
       </div>
-      <div class="weui-cell__ft vux-cell-primary vux-datetime-value" :style="{textAlign: valueTextAlign}">
-        <span class="vux-cell-placeholder" v-if="!currentValue && placeholder">{{ placeholder }}</span>
-        <span class="vux-cell-value" v-if="currentValue">{{ displayFormat ? displayFormat(currentValue) : currentValue }}</span>
-        <icon class="vux-input-icon" type="warn" v-show="!valid" :title="firstError"></icon>
+      <div
+        class="weui-cell__ft vux-cell-primary vux-datetime-value"
+        :style="{
+          textAlign: valueTextAlign
+        }">
+        <span
+          class="vux-cell-placeholder"
+          v-if="!currentValue && placeholder">{{ placeholder }}</span>
+        <span
+          class="vux-cell-value"
+          v-if="currentValue">{{ displayFormat ? displayFormat(currentValue) : currentValue }}</span>
+        <icon
+          class="vux-input-icon"
+          type="warn"
+          v-show="!valid"
+          :title="firstError"></icon>
       </div>
     </slot>
   </a>
@@ -56,7 +64,14 @@ export default {
   props: {
     format: {
       type: String,
-      default: 'YYYY-MM-DD'
+      default: 'YYYY-MM-DD',
+      validator (val) {
+        /* istanbul ignore if */
+        if (process.env.NODE_ENV === 'development' && val && /A/.test(val) && val !== 'YYYY-MM-DD A') {
+          return console.error('[VUX] Datetime prop:format 使用 A 时只允许的值为： YYYY-MM-DD A')
+        }
+        return true
+      }
     },
     title: String,
     value: {
@@ -130,7 +145,8 @@ export default {
     show: Boolean,
     defaultSelectedValue: String,
     computeHoursFunction: Function,
-    computeDaysFunction: Function
+    computeDaysFunction: Function,
+    orderMap: Object
   },
   created () {
     this.isFirstSetValue = false
@@ -138,6 +154,7 @@ export default {
   },
   data () {
     return {
+      currentShow: false,
       currentValue: null,
       valid: true,
       errors: {}
@@ -149,10 +166,26 @@ export default {
     if (!this.readonly) {
       this.$nextTick(() => {
         this.render()
+
+        if (this.show) {
+          this.$nextTick(() => {
+            this.picker && this.picker.show(this.currentValue)
+          })
+        }
       })
     }
   },
   computed: {
+    styles () {
+      if (!this.$parent) {
+        return {}
+      }
+      return {
+        width: this.$parent.labelWidth,
+        textAlign: this.$parent.labelAlign,
+        marginRight: this.$parent.labelMarginRight
+      }
+    },
     pickerOptions () {
       const _this = this
       const options = {
@@ -177,6 +210,7 @@ export default {
         defaultSelectedValue: this.defaultSelectedValue,
         computeHoursFunction: this.computeHoursFunction,
         computeDaysFunction: this.computeDaysFunction,
+        orderMap: this.orderMap || {},
         onSelect (type, val, wholeValue) {
           if (_this.picker && _this.picker.config.renderInline) {
             _this.$emit('input', wholeValue)
@@ -190,6 +224,7 @@ export default {
           _this.$emit('on-clear', value)
         },
         onHide (type) {
+          _this.currentShow = false
           _this.$emit('update:show', false)
           _this.validate()
           _this.$emit('on-hide', type)
@@ -197,10 +232,15 @@ export default {
             _this.$emit('on-cancel')
           }
           if (type === 'confirm') {
-            _this.$emit('on-confirm')
+            setTimeout(() => {
+              _this.$nextTick(() => {
+                _this.$emit('on-confirm', _this.value)
+              })
+            })
           }
         },
         onShow () {
+          _this.currentShow = true
           _this.$emit('update:show', true)
           _this.$emit('on-show')
         }
@@ -218,6 +258,9 @@ export default {
       return this.errors[key]
     },
     labelClass () {
+      if (!this.$parent) {
+        return {}
+      }
       return {
         'vux-cell-justify': this.$parent.labelAlign === 'justify' || this.$parent.$parent.labelAlign === 'justify'
       }
@@ -257,6 +300,7 @@ export default {
       }
     },
     show (val) {
+      if (val === this.currentShow) return
       if (val) {
         this.picker && this.picker.show(this.currentValue)
       } else {

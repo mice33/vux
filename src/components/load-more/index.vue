@@ -21,6 +21,7 @@ export default {
 <style lang="less">
 @import '../../styles/weui/widget/weui-loading/weui-loading.less';
 @import '../../styles/weui/widget/weui_tips/weui-loadmore.less';
+
 .vux-loadmore{
 
   &.weui-loadmore_line{
