@@ -382,11 +382,11 @@ DatetimePicker.prototype = {
 
     if (type === 'noon') {
       data.push({
-        name: 'ÉÏÎç',
+        name: 'ä¸Šåˆ',
         value: 'AM'
       })
       data.push({
-        name: 'ÏÂÎç',
+        name: 'ä¸‹åˆ',
         value: 'PM'
       })
     }
