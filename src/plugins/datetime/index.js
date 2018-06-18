@@ -1,3 +1,4 @@
+require('../../components/datetime/style.less')
 import Datetime from '../../components/datetime/datetimepicker'
 import ObjectAssign from 'object-assign'
 /* just for importing style and avoid less-loader issue */
